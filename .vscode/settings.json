@@ -1,0 +1,17 @@
+{
+    "files.exclude": {
+        ".idea": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "MBD - DDL.sql": "MBD - *.sql",
+        "package.json": ".editorconfig, .env, .gitignore, biome.json, lint-staged.config.js, bun.lockb, tsconfig.json"
+    }
+}

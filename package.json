@@ -1,0 +1,27 @@
+{
+    "name": "mbd-gacha",
+    "module": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "bun run --hot .",
+        "lint": "bunx @biomejs/biome lint --write .",
+        "format": "bunx @biomejs/biome format --write .",
+        "drizzle:generate": "drizzle-kit generate",
+        "drizzle:migrate": "bun ./src/db/migrate",
+        "prepare": "husky"
+    },
+    "dependencies": {
+        "hono": "^4.6.6",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@faker-js/faker": "^9.0.3",
+        "@types/bun": "^1.1.12",
+        "husky": "^9.1.6",
+        "lint-staged": "^15.2.10"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    }
+}
