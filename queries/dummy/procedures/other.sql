@@ -6,22 +6,30 @@ set @rand_char = gacha.get_random_character('kazuma');
 
 call gacha.claim_character(
     'kazuma',
-     @rand_char
+    @rand_char
 );
 
 call gacha.buy_power(
-    'player1',
-    'power1'
+    'kazuma',
+    '1'
 );
 
 call gacha.buy_power(
-    'player1',
-    'power1'
+    'kazuma',
+    '2'
+);
+
+call gacha.get_player_characters(
+    'kazuma'
 );
 
 call gacha.sell_character(
-    'player1',
-    'chara2'
+    'kazuma',
+    '10'
+);
+
+call gacha.get_player_powers(
+    'kazuma'
 );
 
 -- SHOW VARIABLES LIKE 'event_scheduler';

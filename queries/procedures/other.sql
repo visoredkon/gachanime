@@ -74,10 +74,11 @@ begin
 end;
 
 create or replace procedure claim_character(
-    in player_id varchar(255),
-    in character_id varchar(255)
+    in _player_username varchar(255),
+    in _character_id varchar(255)
 )
 begin
+    declare player_id int;
     declare claim_exp bigint;
     declare error_message text;
 
@@ -101,6 +102,28 @@ begin
 
     start transaction;
 
+    if not validate_existing_user(
+        'player',
+        null,
+        _player_username,
+        null,
+        error_message
+    ) then
+        signal
+            sqlstate '02000'
+        set
+            message_text = error_message;
+    end if;
+
+    select
+        players.id
+    into
+        player_id
+    from
+        players
+    where
+        players.username = _player_username;
+
     select
         exp
     into
@@ -108,7 +131,7 @@ begin
     from
         characters
     where
-        id = character_id;
+        id = _character_id;
 
     if (select claim_limit from players where players.id = player_id) = 0 then
         set error_message = 'Player sudah mencapat limit claim';
@@ -121,7 +144,7 @@ begin
         from
             claims
         where
-            claims.id_player = player_id and claims.id_character = character_id
+            claims.id_player = player_id and claims.id_character = _character_id
     ) then
         update
             players
@@ -137,7 +160,7 @@ begin
             claims
         set
             claims.id_player = player_id,
-            claims.id_character = character_id,
+            claims.id_character = _character_id,
             claims.exp = claim_exp;
 
         update
@@ -152,10 +175,11 @@ begin
 end;
 
 create or replace procedure buy_power(
-    player_id varchar(255),
-    power_id varchar(255)
+    _player_username varchar(255),
+    _power_id varchar(255)
 )
 begin
+    declare player_id int;
     declare player_money bigint;
     declare power_price bigint;
     declare error_message text;
@@ -180,13 +204,35 @@ begin
 
     start transaction;
 
+    if not validate_existing_user(
+        'player',
+        null,
+        _player_username,
+        null,
+        error_message
+    ) then
+        signal
+            sqlstate '02000'
+        set
+            message_text = error_message;
+    end if;
+
+    select
+        players.id
+    into
+        player_id
+    from
+        players
+    where
+        players.username = _player_username;
+
     if exists (
         select
             1
         from
             player_powers
         where
-            player_powers.id_player = player_id and player_powers.id_power = power_id
+            player_powers.id_player = player_id and player_powers.id_power = _power_id
     ) then
         signal sqlstate
             '45000'
@@ -203,31 +249,30 @@ begin
     join
         powers
     on
-        powers.id = power_id
+        powers.id = _power_id
     where
         players.id = player_id;
 
     if player_money < power_price then
-        signal sqlstate
-            '45000'
-        set
-            message_text = 'Uang yang dimiliki player tidak cukup!';
+        set error_message = 'Uang yang dimiliki player tidak cukup!';
+        signal sqlstate '45000';
     end if;
 
     insert into
         player_powers
     set
         player_powers.id_player = player_id,
-        player_powers.id_power = power_id;
+        player_powers.id_power = _power_id;
 
     commit;
 end;
 
 create or replace procedure sell_character(
-    player_id varchar(255),
-    character_id varchar(255)
+    _player_username varchar(255),
+    _character_id varchar(255)
 )
 begin
+    declare player_id int;
     declare chara_exp bigint;
     declare error_message text;
 
@@ -251,6 +296,28 @@ begin
 
     start transaction;
 
+    if not validate_existing_user(
+        'player',
+        null,
+        _player_username,
+        null,
+        error_message
+    ) then
+        signal
+            sqlstate '02000'
+        set
+            message_text = error_message;
+    end if;
+
+    select
+        players.id
+    into
+        player_id
+    from
+        players
+    where
+        players.username = _player_username;
+
     select
         exp
     into
@@ -258,12 +325,12 @@ begin
     from
         claims
     where
-        claims.id_player = player_id and claims.id_character = character_id;
+        claims.id_player = player_id and claims.id_character = _character_id;
 
     delete from
         claims
     where
-        claims.id_player = player_id and claims.id_character = character_id;
+        claims.id_player = player_id and claims.id_character = _character_id;
 
     update
         players
