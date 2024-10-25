@@ -1,11 +1,13 @@
+use gacha;
+
 create or replace view
     players_characters
 as
     select
-        players.name,
-        characters.name,
-        characters.description,
-        claims.exp
+        players.name as player_name,
+        characters.name as character_name,
+        characters.description as character_description,
+        claims.exp as character_exp
     from
         claims
     join
@@ -21,9 +23,9 @@ create or replace view
     players_powers
 as
     select
-        players.name,
-        powers.name,
-        powers.description
+        players.name as player_name,
+        powers.name as power_name,
+        powers.description as power_description
     from
         player_powers
     join
