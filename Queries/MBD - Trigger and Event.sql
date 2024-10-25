@@ -1,6 +1,6 @@
 use gacha;
 
-create trigger
+create or replace trigger
     update_exp_after_claim
 after insert on
     claims
@@ -14,7 +14,7 @@ begin
         players.id = new.id_player;
 end;
 
-create trigger
+create or replace trigger
     update_money_after_bought
 after insert on
     player_powers
@@ -43,10 +43,10 @@ end;
 
 set global event_scheduler = on;
 
-create event
+create or replace event
     reset_total_pull
 on schedule
-    every 1 day
+    every 12 hour
 do begin
     declare player_count int;
 
@@ -63,7 +63,7 @@ do begin
                     from
                         player_powers
                     where
-                        player_powers.id_player = players.id and player_powers.id_power = 'power1'
+                        player_powers.id_player = players.id and player_powers.id_power = get_power_id('+1 claim')
                 ),
                 11, -- kalo ada +1
                 10 -- kalo gada normal
@@ -71,10 +71,10 @@ do begin
     end if;
 end;
 
-create event
+create or replace event
     reset_claim_limit
 on schedule
-    every 1 day
+    every 24 hour
 do begin
     declare player_count int;
 
@@ -91,7 +91,7 @@ do begin
                     from
                         player_powers
                     where
-                        player_powers.id_player = players.id and player_powers.id_power = 'power2'
+                        player_powers.id_player = players.id and player_powers.id_power = get_power_id('+1 pull')
                 ),
                 2, -- kalo ada +1
                 1 -- kalo gada normal
