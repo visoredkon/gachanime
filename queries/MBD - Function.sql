@@ -162,23 +162,35 @@ begin
 end;
 
 create or replace function get_random_character(
-    in _player_id varchar(255)
+    in _player_username varchar(255)
 )
-returns varchar(255)
+returns int
 begin
     declare character_id varchar(255);
+    declare not_found condition for sqlstate '02000';
 
-    declare exit handler for not found
+    declare exit handler for not_found
     begin
-        signal sqlstate '45000'
-        set message_text = 'Tidak dapat menemukan player!';
+        signal sqlstate '02000'
+        set message_text = 'Tidak dapat menemukan player';
     end;
 
-    if (select total_pull from players where players.id = _player_id) = 0 then
+    if not exists(
+        select
+            1
+        from
+            players
+        where
+            players.username = _player_username
+    ) then
+        signal not_found;
+    end if;
+
+    if (select total_pull from players where players.username = _player_username) = 0 then
         signal
             sqlstate '45000'
         set
-            message_text = 'Player telah mencapai limit pull!';
+            message_text = 'Player telah mencapai limit pull';
     end if;
 
     update
@@ -186,7 +198,7 @@ begin
     set
         players.total_pull = players.total_pull - 1
     where
-        players.id = _player_id;
+        players.username = _player_username;
 
     select
         id
@@ -208,6 +220,12 @@ returns int
 begin
     declare power_id int;
 
+    declare exit handler for not found
+    begin
+        signal sqlstate '02000'
+        set message_text = 'Tidak dapat menemukan power';
+    end;
+
     select
         id
     into
@@ -227,6 +245,12 @@ returns int
 begin
     declare total_characters int;
 
+    declare exit handler for not found
+    begin
+        signal sqlstate '02000'
+        set message_text = 'Data tidak ditemukan';
+    end;
+
     select
         count(id_player)
     into
@@ -245,6 +269,12 @@ create or replace function count_player_powers(
 returns int
 begin
     declare total_powers int;
+
+    declare exit handler for not found
+    begin
+        signal sqlstate '02000'
+        set message_text = 'Data tidak ditemukan';
+    end;
 
     select
         count(id_player)

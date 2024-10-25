@@ -2,12 +2,10 @@ use gacha;
 
 call gacha.login('player1', '12345678');
 
-call gacha.get_players(true, null);
-
-set @rand_char = gacha.get_random_character('player1');
+set @rand_char = gacha.get_random_character('kazuma');
 
 call gacha.claim_character(
-    'player1',
+    'kazuma',
      @rand_char
 );
 
