@@ -1,28 +1,39 @@
 import { parseArgs } from "node:util";
+import mysql from "mysql2/promise";
+
+export const connection = await mysql.createConnection({
+    host: Bun.env.MIGRATE_MYSQL_HOST,
+    user: Bun.env.MIGRATE_MYSQL_USER,
+    password: Bun.env.MIGRATE_MYSQL_PASSWORD,
+    multipleStatements: true,
+});
 
 async function manipulateDatabase(action: "seed" | "drop") {
     const operations = {
-        seed: async () => {
-            const inserts: never[] = [];
+        // seed: async () => {
+        //     const inserts = [];
 
-            for (const insert of inserts) {
-                await insert;
-            }
+        //     for (const insert of inserts) {
+        //         await connection.query(insert);
+        //     }
 
-            console.info("Database seeded!");
-        },
+        //     console.info("Database seeded!");
+        // },
         drop: async () => {
-            const drops: never[] = [];
+            const drops = [
+                await Bun.file(`${require.resolve("../queries.sql")}`).text(),
+            ];
 
-            for (const del of drops) {
-                await del;
+            for (const drop of drops) {
+                await connection.query(drop);
             }
 
             console.info("Data dropped!");
         },
     };
 
-    await operations[action]();
+    // await operations[action]();
+    await operations[action as "drop"]();
 }
 
 const { values } = parseArgs({

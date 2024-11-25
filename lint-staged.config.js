@@ -1,7 +1,7 @@
 export default {
     "*.{ts,tsx,json}": (stagedFiles) => {
         return [
-            `biome lint --write ${stagedFiles.join(" ")} --error-on-warnings`,
+            `biome lint --write --error-on-warnings ${stagedFiles.join(" ")}`,
             `biome format --write ${stagedFiles.join(" ")}`,
         ];
     },

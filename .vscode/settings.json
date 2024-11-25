@@ -12,6 +12,7 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "MBD - DDL.sql": "MBD - *.sql",
-        "package.json": ".editorconfig, .env, .gitignore, biome.json, lint-staged.config.js, bun.lockb, tsconfig.json"
-    }
+        "package.json": ".editorconfig, .env, .env.*, .gitignore, biome.json, Dockerfile, docker-compose.yml, lint-staged.config.js, bun.lockb, tsconfig.json"
+    },
+    "cSpell.words": ["uploadthing"]
 }

@@ -1,4 +1,4 @@
-# mbd-gacha
+# Gachanime
 
 To install dependencies:
 
