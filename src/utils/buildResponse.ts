@@ -9,19 +9,24 @@ export enum StatusCode {
     InternalServerError = 500,
 }
 
-type SuccessResponse = {
+export type SuccessResponse = {
     message: string;
-    data?: object;
+    data?: Record<string, unknown> | Record<string, unknown>[];
 };
 
-type ErrorResponse = {
+export type ErrorResponse = {
     errors: string;
+};
+
+export type ResponseBody = {
+    message: string;
+    data?: Record<string, unknown> | Record<string, unknown>[];
 };
 
 export const buildResponse = (
     code: StatusCode,
     message: string,
-    data?: object,
+    data?: Record<string, unknown> | Record<string, unknown>[],
 ): [SuccessResponse | ErrorResponse, StatusCode] => {
     const response: Partial<SuccessResponse & ErrorResponse> = {};
 

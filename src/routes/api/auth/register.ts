@@ -1,15 +1,15 @@
 import { callProcedure } from "@/services/database";
-import type { RegisterUser } from "@/types";
+import type { ReqRegisterUser, ResRegisterUser } from "@/types";
 import { StatusCode, buildResponse } from "@/utils/buildResponse";
 import { Hono } from "hono";
 
 const router = new Hono();
 
 router.post("/", async (c) => {
-    const body: RegisterUser = await c.req.json();
+    const body: ReqRegisterUser = await c.req.json();
 
     const queryResults = (
-        await callProcedure<{ addedPlayerId: number }>("register", [
+        await callProcedure<ResRegisterUser>("register", [
             body.name,
             body.email,
             body.gender,
@@ -20,9 +20,11 @@ router.post("/", async (c) => {
         ])
     ).result[0];
 
+    const { addedPlayerId } = queryResults;
+
     return c.json(
-        ...buildResponse(StatusCode.Ok, "Login success", {
-            queryResults,
+        ...buildResponse(StatusCode.Created, "Register akun berhasil", {
+            addedPlayerId,
         }),
     );
 });
