@@ -2,91 +2,99 @@ drop database if exists gachanime;
 create database gachanime;
 use gachanime;
 
+-- set UTC offset
+set global time_zone = '+08:00';
+
 -- === Start Tables ===
 create or replace table admins (
-    id int primary key auto_increment,
+    id int unsigned primary key auto_increment,
     name varchar(255) not null,
-    email varchar(255) not null,
+    email varchar(255) unique not null,
     gender enum('Laki-laki', 'Perempuan') not null,
     username varchar(255) unique not null,
-    password text not null,
+    password varchar(255) not null,
     profile_picture text,
     bio text not null,
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
+    tz_offset varchar(6) not null default '+08:00',
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
     deleted_at datetime,
 
-    index(name, email, username)
+    fulltext (name, username, email)
 );
 
 create or replace table players (
-    id int primary key auto_increment,
+    id int unsigned primary key auto_increment,
     name varchar(255) not null,
-    email varchar(255) not null,
+    email varchar(255) unique not null,
     gender enum('Laki-laki', 'Perempuan') not null,
     username varchar(255) unique not null,
-    password text not null,
+    password varchar(255) not null,
     profile_picture text,
     bio text not null,
-    claim_limit tinyint default 1,
-    total_pull int default 10,
-    total_exp bigint default 0,
-    total_money bigint default 0,
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
+    claim_limit tinyint unsigned default 1,
+    pull_limit tinyint unsigned default 10,
+    total_exp bigint unsigned default 0,
+    total_money bigint unsigned default 0,
+    tz_offset varchar(6) not null default '+08:00',
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
     deleted_at datetime,
 
-    index(name, email, username)
+    fulltext (name, username, email)
 );
 
 create or replace table characters (
-    id int primary key auto_increment,
+    id int unsigned primary key auto_increment,
     name varchar(255) not null,
     description text not null,
-    exp bigint default 10,
+    exp bigint unsigned  default 10,
     media varchar(255),
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
-    deleted_at datetime
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
+    deleted_at datetime,
+
+    fulltext (name, description)
 );
 
 create or replace table powers (
-    id int primary key auto_increment,
+    id int unsigned primary key auto_increment,
     name varchar(255) unique not null,
     description text not null,
-    price bigint default 10,
+    price bigint unsigned default 10,
     media varchar(255),
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
-    deleted_at datetime
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
+    deleted_at datetime,
+
+    fulltext (name, description)
 );
 
 -- Pivot Table
-
 create or replace table claims (
     id int primary key auto_increment,
-    id_player int not null,
-    id_character int not null,
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
+    id_player int unsigned not null,
+    id_character int unsigned not null,
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
     deleted_at datetime,
 
-    foreign key (id_player) references players(id) on delete cascade,
-    foreign key (id_character) references characters(id) on delete cascade,
+    foreign key (id_player) references players(id) on update cascade on delete cascade,
+    foreign key (id_character) references characters(id) on update cascade on delete cascade,
 
     unique key (id_player, id_character)
 );
 
 create or replace table player_powers (
-    id int primary key auto_increment,
-    id_player int not null,
-    id_power int not null,
-    created_at datetime default current_timestamp,
-    updated_at datetime default current_timestamp on update current_timestamp,
+    id int unsigned primary key auto_increment,
+    id_player int unsigned not null,
+    id_power int unsigned not null,
+    created_at datetime default now(),
+    updated_at datetime default now() on update now(),
     deleted_at datetime,
 
-    foreign key (id_player) references players(id) on delete cascade,
-    foreign key (id_power) references powers(id) on delete cascade,
+    foreign key (id_player) references players(id) on update cascade on delete cascade,
+    foreign key (id_power) references powers(id) on update cascade on delete cascade,
 
     unique key (id_player, id_power)
 );
@@ -147,20 +155,41 @@ end;
 
 
 -- === Start Functions ===
+create or replace function better_length(
+    in _value text
+) returns int
+begin
+    return length(ifnull(_value, ''));
+end;
+
 create or replace function is_username_exists(
     in _username varchar(255),
     out _error_message text
 ) returns boolean
 begin
-    if not exists(
+    if exists(
         select
             1
         from
-            admins
-        cross join
-            players
-        where
-            admins.username = _username or players.username = _username
+            ((select
+                1
+            from
+                admins
+            where
+                admins.username = _username
+            limit
+                1)
+            union
+            (select
+                1
+            from
+                players
+            where
+                players.username = _username
+            limit
+                1))
+            as
+                users
     ) then
         set _error_message = 'Username tidak tersedia (telah digunakan)';
         return true;
@@ -171,22 +200,27 @@ end;
 
 create or replace function is_valid_username_password(
     in _username varchar(255),
-    in _password text,
+    in _password varchar(255),
     out _error_message text
 ) returns boolean
 begin
-    if (length(_username) or length(_username) > 50) then
+    declare username_length int default 0;
+    declare password_length int default 0;
+
+    set username_length = better_length(_username);
+    set password_length = better_length(_password);
+
+    if (not username_length or (username_length < 3 or username_length > 50)) then
         set _error_message = 'Username tidak boleh kosong atau lebih dari 50 karakter';
         return false;
     end if;
 
-    if (length(_password) < 8) then
+    if (not password_length or password_length < 8) then
         set _error_message = 'Panjang password minimal 8 karakter';
         return false;
     end if;
 
-    -- NOTE: Check error message-nya bisa atau enggak.
-    if not (is_username_exists(_username, _error_message)) then
+    if (is_username_exists(_username, _error_message)) then
         return false;
     end if;
 
@@ -194,7 +228,7 @@ begin
 end;
 
 create or replace function is_valid_authentication(
-    in _id int,
+    in _username varchar(255),
     in _password text,
     out _type enum('player', 'admin'),
     out _error_message text
@@ -206,7 +240,7 @@ begin
         from
             admins
         where
-            admins.id = _id or admins.password = _password
+            admins.username = _username or admins.password = _password
     ) then
         set _type = 'admin';
         return true;
@@ -218,7 +252,7 @@ begin
         from
             players
         where
-            players.id = _id or players.password = _password
+            players.username = _username or players.password = _password
     ) then
         set _type = 'player';
         return true;
@@ -234,7 +268,7 @@ end;
 create or replace procedure register(
     in _name varchar(255),
     in _email varchar(255),
-    in _gender enum('Laki-laki', 'Perempuan'),
+    in _gender varchar(255),
     in _username varchar(255),
     in _password text,
     in _profile_picture text,
@@ -243,26 +277,34 @@ create or replace procedure register(
 begin
     declare error_message text;
 
-    declare exit handler for sqlexception
+    declare exit handler for sqlexception, not found
     begin
         rollback;
+
+        if (not better_length(error_message)) then
+            set error_message = 'Terjadi galat pada server. Tolong hubungi admin untuk melaporkan galat';
+        end if;
+
         signal
             sqlstate '45000'
         set
             message_text = error_message;
     end;
 
-    set error_message = 'Terjadi galat pada server. Tolong hubungi admin untuk melaporkan galat';
-
     start transaction;
 
-    if not (length(_name)) then
+    if not (better_length(_name)) then
         set error_message = 'Nama tidak boleh kosong';
         signal sqlstate '45000';
     end if;
 
-    if not (_email regexp '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') then
+    if not (better_length(_email) and _email regexp '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') then
         set error_message = 'Email tidak valid';
+        signal sqlstate '45000';
+    end if;
+
+    if not (better_length(_gender) and (_gender = 'Laki-laki' or _gender = 'Perempuan')) then
+        set error_message = 'Gender tidak valid';
         signal sqlstate '45000';
     end if;
 
@@ -290,16 +332,15 @@ end;
 
 -- === Start Events ===
 -- show variables like 'event_scheduler';
-
 set global event_scheduler = on;
 
 create or replace event
-    reset_total_pull
+    reset_pull_limit
 on schedule
     every 12 hour
 do begin
     declare player_count int;
-    set @total_pull = 10;
+    set @pull_limit = 10;
 
     select
         count(id)
@@ -314,7 +355,7 @@ do begin
         update
             players
         set
-            players.total_pull = IF(
+            players.pull_limit = IF(
                 exists (
                     select
                         1
@@ -323,11 +364,11 @@ do begin
                     where
                         player_powers.id_player = players.id and player_powers.id_power = get_power_id('+1 claim')
                 ),
-                @total_pull + 1, -- kalo ada +1
-                @total_pull -- kalo gada, normal
+                @pull_limit + 1, -- kalo ada +1
+                @pull_limit -- kalo gada, normal
             )
         where
-            players.total_pull < @total_pull;
+            players.pull_limit < @pull_limit;
 
     end if;
 end;
@@ -369,6 +410,5 @@ do begin
             players.claim_limit < claim_limit;
     end if;
 end;
-
 -- show events;
 -- === End Events ===
