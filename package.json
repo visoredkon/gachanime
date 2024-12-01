@@ -5,17 +5,18 @@
     "scripts": {
         "dev": "bun run --hot .",
         "lint": "bunx @biomejs/biome lint --write .",
+        "check": "bunx @biomejs/biome check --write .",
         "format": "bunx @biomejs/biome format --write .",
         "prepare": "husky"
     },
     "dependencies": {
         "hono": "^4.6.12",
-        "mysql2": "^3.11.4"
+        "mysql2": "^3.11.5"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@faker-js/faker": "^9.2.0",
-        "@types/bun": "^1.1.13",
+        "@types/bun": "^1.1.14",
         "husky": "^9.1.7",
         "lint-staged": "^15.2.10"
     },

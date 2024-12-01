@@ -14,5 +14,5 @@
         "MBD - DDL.sql": "MBD - *.sql",
         "package.json": ".editorconfig, .env, .env.*, .gitignore, biome.json, Dockerfile, docker-compose.yml, lint-staged.config.js, bun.lockb, tsconfig.json"
     },
-    "cSpell.words": ["uploadthing"]
+    "cSpell.words": ["elysiajs", "gachanime", "Kazuma", "uploadthing"]
 }

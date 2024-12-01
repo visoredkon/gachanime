@@ -51,11 +51,12 @@
             }
         },
         {
-            "include": ["./utils/**"],
+            "include": ["./utils/**", "./tests/**"],
             "linter": {
                 "rules": {
                     "suspicious": {
-                        "noConsole": "off"
+                        "noConsole": "off",
+                        "noConsoleLog": "off"
                     }
                 }
             }
