@@ -6,7 +6,10 @@ import { Hono } from "hono";
 const router = new Hono();
 
 router.post("/", async (c) => {
-    const body: ReqRegisterUser = await c.req.json();
+    const body: ReqRegisterUser = await c.req.parseBody();
+
+    // TODO: Handle binary (mungkin path atau key kalau nanti make service storage)
+    const profilePicture = "";
 
     const queryResults = (
         await callProcedure<ResRegisterUser>("register", [
@@ -15,8 +18,8 @@ router.post("/", async (c) => {
             body.gender,
             body.username,
             body.password,
-            body.profilePicture ?? null,
             body.bio ?? null,
+            profilePicture,
         ])
     ).result[0];
 
