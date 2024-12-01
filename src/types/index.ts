@@ -12,7 +12,7 @@ type ReqRegisterUser = {
     gender: "Laki-laki" | "Perempuan";
     username: string;
     password: string;
-    profilePicture?: string;
+    profilePicture?: File;
     bio?: string;
 };
 // === End Request Type ===

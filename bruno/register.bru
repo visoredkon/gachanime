@@ -1,0 +1,30 @@
+meta {
+  name: register
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://{{host}}:{{port}}/{{path}}/auth/register
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  name: {{name}}
+  email: {{email}}
+  gender: {{gender}}
+  username: {{username}}
+  password: {{password}}
+  bio: {{bio}}
+  ~profilePicture: @file()
+}
+
+vars:pre-request {
+  name: Kazuma
+  email: kazuma@gachanime.com
+  gender: Laki-Laki
+  username: kazuma
+  password: kazuma123
+  bio: Petualang
+}
