@@ -5,21 +5,25 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 
 > Endpoint selalu dimulai dari `/api`
 
+## Unauthorized
+#### Response
+> **Status: `401`**
+> ```json
+> {
+>     "error": "no authorization included in request"
+> }
+> ```
+
 ## Unhandled Exception (skill issue)
 #### Response
 > **Status: `500`**
 > ```json
 > {
->     "errors": "Internal server error"
-> }
-> ```
-> **Status: `500`**
-> ```json
-> {
->     "errors": "Terjadi galat pada server. Tolong hubungi admin untuk melaporkan galat"
+>     "error": "Terjadi galat pada server. Hubungi admin untuk melaporkan galat"
 > }
 > ```
 
+## > `/auth`
 ## `/register`
 
 ### Method: `POST`
@@ -55,31 +59,98 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `400`**
 > ```json
 > {
->     "errors": "Nama tidak boleh kosong"
+>     "error": "Nama tidak boleh kosong"
 > }
 > ```
 > ```json
 > {
->     "errors": "Email tidak valid"
+>     "error": "Email tidak valid"
 > }
 > ```
 > ```json
 > {
->     "errors": "Gender tidak valid"
+>     "error": "Email telah digunakan"
 > }
 > ```
 > ```json
 > {
->     "errors": "Username tidak boleh kosong atau lebih dari 50 karakter"
+>     "error": "Gender tidak valid"
 > }
 > ```
 > ```json
 > {
->     "errors": "Panjang password minimal 8 karakter"
+>     "error": "Username tidak boleh kosong atau lebih dari 50 karakter"
 > }
 > ```
 > ```json
 > {
->     "errors": "Username tidak tersedia (telah digunakan)"
+>     "error": "Panjang password minimal 8 karakter"
+> }
+> ```
+> ```json
+> {
+>     "error": "Username tidak tersedia (telah digunakan)"
+> }
+> ```
+
+## `/login`
+
+### Method: `POST`
+
+#### Request
+> ##### `Param`
+> None
+> ##### `Query`
+> None
+> ##### `Body`
+> ```json
+> {
+>   "username": string, // max 50
+>   "password": string // min 8
+> }
+> ```
+
+#### Response
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Login berhasil",
+>   "data": {
+>     "id": number,
+>     "name": string,
+>     "username": string,
+>     "role": string, // player | admin
+>     "tzOffset": string
+>   }
+> }
+> ```
+> **Status: `400`**
+> ```json
+> {
+>     "error": "Username atau password salah"
+> }
+> ```
+
+## `/logout`
+
+### Method: `DELETE`
+
+#### Request
+> ##### `Headers`
+> ```
+> Cookie: token=string
+> ```
+> ##### `Param`
+> None
+> ##### `Query`
+> None
+> ##### `Body`
+> None
+
+#### Response
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Logout berhasil",
 > }
 > ```
