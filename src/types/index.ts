@@ -1,24 +1,45 @@
-type SqlError = { sqlState: number } & Error;
+type ValuesOf<T> = T[keyof T][];
 
-// === Start Request Type ===
-type ReqLoginUser = {
-    username: string;
-    password: string;
+interface SqlError extends Error {
+    sqlState: number;
+}
+
+type ProcedureDetails<Input, Output> = {
+    input: Input;
+    output: Output;
 };
 
-type ReqRegisterUser = {
-    name: string;
-    email: string;
-    gender: "Laki-laki" | "Perempuan";
-    username: string;
-    password: string;
-    profilePicture?: File;
-    bio?: string;
+type Procedure = {
+    login: ProcedureDetails<
+        {
+            username: string;
+            password: string;
+        },
+        {
+            id: number;
+            name: string;
+            username: string;
+            role: "player" | "admin";
+        }
+    >;
+    register: ProcedureDetails<
+        {
+            name: string;
+            email: string;
+            gender: "Laki-laki" | "Perempuan";
+            username: string;
+            password: string;
+            bio?: string;
+            profilePicture?: string;
+        },
+        {
+            id: number;
+            name: string;
+            username: string;
+            role: "player" | "admin";
+            addedPlayerId: number;
+        }
+    >;
 };
-// === End Request Type ===
 
-// === Start Response Type ===
-type ResRegisterUser = Record<"addedPlayerId", number>;
-// === End Response Type ===
-
-export type { SqlError, ReqLoginUser, ReqRegisterUser, ResRegisterUser };
+export type { ValuesOf, SqlError, Procedure };

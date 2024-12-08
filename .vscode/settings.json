@@ -11,8 +11,7 @@
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
-        "MBD - DDL.sql": "MBD - *.sql",
-        "package.json": ".editorconfig, .env, .env.*, .gitignore, biome.json, Dockerfile, docker-compose.yml, lint-staged.config.js, bun.lockb, tsconfig.json"
+        "package.json": ".editorconfig, .env, .env.*, .gitignore, biome.json, bun.d.ts, Dockerfile, docker-compose.yml, lint-staged.config.js, bun.lockb, tsconfig.json"
     },
     "cSpell.words": ["elysiajs", "gachanime", "Kazuma", "uploadthing"]
 }

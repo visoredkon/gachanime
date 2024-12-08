@@ -1,34 +1,36 @@
 import { callProcedure } from "@/services/database";
-import type { ReqRegisterUser, ResRegisterUser } from "@/types";
+import type { Procedure } from "@/types";
 import { StatusCode, buildResponse } from "@/utils/buildResponse";
 import { Hono } from "hono";
 
 const router = new Hono();
 
 router.post("/", async (c) => {
-    const body: ReqRegisterUser = await c.req.parseBody();
+    const body: Omit<Procedure["register"]["input"], "profilePicture"> & {
+        profilePicture?: File;
+    } = await c.req.parseBody();
 
     // TODO: Handle binary (mungkin path atau key kalau nanti make service storage)
     const profilePicture = "";
 
     const queryResults = (
-        await callProcedure<ResRegisterUser>("register", [
+        await callProcedure("register", [
             body.name,
             body.email,
             body.gender,
             body.username,
             body.password,
-            body.bio ?? null,
+            body.bio,
             profilePicture,
         ])
     ).result[0];
 
-    const { addedPlayerId } = queryResults;
-
     return c.json(
-        ...buildResponse(StatusCode.Created, "Register akun berhasil", {
-            addedPlayerId,
-        }),
+        ...buildResponse(
+            StatusCode.Created,
+            "Register akun berhasil",
+            queryResults,
+        ),
     );
 });
 

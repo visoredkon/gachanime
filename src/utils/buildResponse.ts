@@ -1,4 +1,4 @@
-export enum StatusCode {
+enum StatusCode {
     Ok = 200,
     Created = 201,
     BadRequest = 400,
@@ -9,21 +9,21 @@ export enum StatusCode {
     InternalServerError = 500,
 }
 
-export type SuccessResponse = {
+type SuccessResponse = {
     message: string;
     data?: Record<string, unknown> | Record<string, unknown>[];
 };
 
-export type ErrorResponse = {
-    errors: string;
+type ErrorResponse = {
+    error: string;
 };
 
-export type ResponseBody = {
+type ResponseBody = {
     message: string;
     data?: Record<string, unknown> | Record<string, unknown>[];
 };
 
-export const buildResponse = (
+const buildResponse = (
     code: StatusCode,
     message: string,
     data?: Record<string, unknown> | Record<string, unknown>[],
@@ -33,9 +33,21 @@ export const buildResponse = (
     if (code === StatusCode.Ok || code === StatusCode.Created) {
         response.message = message;
         response.data = data;
+    } else if (code === StatusCode.InternalServerError) {
+        response.error =
+            message ||
+            "Terjadi galat pada server. Hubungi admin untuk melaporkan galat";
     } else {
-        response.errors = message;
+        response.error = message;
     }
 
     return [response as SuccessResponse | ErrorResponse, code];
+};
+
+export {
+    StatusCode,
+    type SuccessResponse,
+    type ErrorResponse,
+    type ResponseBody,
+    buildResponse,
 };

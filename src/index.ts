@@ -1,17 +1,22 @@
-import { RouterApi } from "@/routes/api";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
+import type { Variables } from "hono/types";
+
+import { RouterApi } from "@/routes/api";
 import type { SqlError } from "./types";
 import { StatusCode, buildResponse } from "./utils/buildResponse";
 import { sqlStateType } from "./utils/sqlStateType";
 
-const app = new Hono();
+// biome-ignore lint/style/useNamingConvention: <explanation>
+const app = new Hono<{ Variables: Variables }>();
 
 app.use(logger());
 
 app.notFound((c) => {
-    return c.json(...buildResponse(StatusCode.NotFound, "Not found"));
+    return c.json(
+        ...buildResponse(StatusCode.NotFound, "Endpoint tidak ditemukan"),
+    );
 });
 
 app.onError((err, c) => {
@@ -31,19 +36,12 @@ app.onError((err, c) => {
 
         console.error(sqlState, err);
 
-        return c.json(
-            ...buildResponse(StatusCode.InternalServerError, err.message),
-        );
+        return c.json(...buildResponse(StatusCode.InternalServerError, ""));
     }
 
     console.error(err);
 
-    return c.json(
-        ...buildResponse(
-            StatusCode.InternalServerError,
-            "Internal server error",
-        ),
-    );
+    return c.json(...buildResponse(StatusCode.InternalServerError, ""));
 });
 
 app.route("/api", RouterApi);

@@ -1,24 +1,46 @@
 import { parseArgs } from "node:util";
-import mysql from "mysql2/promise";
 
-const connection = await mysql.createConnection({
-    host: Bun.env.MIGRATE_MYSQL_HOST,
-    user: Bun.env.MIGRATE_MYSQL_USER,
-    password: Bun.env.MIGRATE_MYSQL_PASSWORD,
-    multipleStatements: true,
-});
+import { callProcedure } from "@/services/database";
+import { connection } from "./connection";
+import { data } from "./data";
 
 async function manipulateDatabase(action: "seed" | "drop") {
     const operations = {
-        // seed: async () => {
-        //     const inserts = [];
+        seed: async () => {
+            const inserts = {
+                admins: data.admins,
+                players: data.players,
+            };
 
-        //     for (const insert of inserts) {
-        //         await connection.query(insert);
-        //     }
+            for (const data of inserts.admins) {
+                await connection.execute(
+                    "insert into admins set admins.name = ?, admins.email = ?, admins.gender = ?, admins.username = ?, admins.password = hash(?), admins.bio = ?, admins.profile_picture = ?;",
+                    [
+                        data.name,
+                        data.email,
+                        data.gender,
+                        data.username,
+                        data.password,
+                        data.bio,
+                        data.profilePicture,
+                    ],
+                );
+            }
 
-        //     console.info("Database seeded!");
-        // },
+            for (const data of inserts.players) {
+                await callProcedure("register", [
+                    data.name,
+                    data.email,
+                    data.gender,
+                    data.username,
+                    data.password,
+                    data.bio,
+                    data.profilePicture,
+                ]);
+            }
+
+            console.info("Database seeded!");
+        },
         drop: async () => {
             const drops = [
                 await Bun.file(`${require.resolve("../queries.sql")}`).text(),
@@ -32,8 +54,7 @@ async function manipulateDatabase(action: "seed" | "drop") {
         },
     };
 
-    // await operations[action]();
-    await operations[action as "drop"]();
+    await operations[action]();
 }
 
 const { values } = parseArgs({

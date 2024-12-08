@@ -20,11 +20,25 @@ body:multipart-form {
   ~profilePicture: @file()
 }
 
-vars:pre-request {
-  name: Kazuma
-  email: kazuma@gachanime.com
-  gender: Laki-Laki
-  username: kazuma
-  password: kazuma123
-  bio: Petualang
+script:pre-request {
+  const dummyAccount = {
+    name: "Kazuma",
+    email: "kazuma@gachanime.com",
+    gender: "Laki-Laki",
+    username: "kazuma",
+    password: "kazuma123",
+    bio: "Petualang"
+  }
+  
+  for (const key in dummyAccount) {
+      const value = dummyAccount[key]
+  
+      bru.setVar(key, value)
+  }
+}
+
+script:post-response {
+  const body = res.body
+  
+  bru.setVar('registerResponse', body)
 }

@@ -2,7 +2,6 @@ drop database if exists gachanime;
 create database gachanime;
 use gachanime;
 
--- set UTC offset
 set global time_zone = '+08:00';
 
 -- === Start Tables ===
@@ -13,9 +12,8 @@ create or replace table admins (
     gender enum('Laki-laki', 'Perempuan') not null,
     username varchar(255) unique not null,
     password varchar(255) not null,
-    profile_picture text,
     bio text not null,
-    tz_offset varchar(6) not null default '+08:00',
+    profile_picture text,
     created_at datetime default now(),
     updated_at datetime default now() on update now(),
     deleted_at datetime,
@@ -30,13 +28,12 @@ create or replace table players (
     gender enum('Laki-laki', 'Perempuan') not null,
     username varchar(255) unique not null,
     password varchar(255) not null,
-    profile_picture text,
     bio text not null,
+    profile_picture text,
     claim_limit tinyint unsigned default 1,
     pull_limit tinyint unsigned default 10,
     total_exp bigint unsigned default 0,
     total_money bigint unsigned default 0,
-    tz_offset varchar(6) not null default '+08:00',
     created_at datetime default now(),
     updated_at datetime default now() on update now(),
     deleted_at datetime,
@@ -162,6 +159,13 @@ begin
     return length(ifnull(_value, ''));
 end;
 
+create or replace function hash(
+    in _value text
+) returns text
+begin
+    return sha2(ifnull(_value, ''), 512);
+end;
+
 create or replace function is_username_exists(
     in _username varchar(255),
     out _error_message text
@@ -176,7 +180,7 @@ begin
             from
                 admins
             where
-                admins.username = _username
+                admins.username = _username and admins.deleted_at is null
             limit
                 1)
             union
@@ -185,13 +189,49 @@ begin
             from
                 players
             where
-                players.username = _username
+                players.username = _username and players.deleted_at is null
             limit
                 1))
             as
                 users
     ) then
         set _error_message = 'Username tidak tersedia (telah digunakan)';
+        return true;
+    end if;
+
+    return false;
+end;
+
+create or replace function is_email_exists(
+    in _email varchar(255),
+    out _error_message text
+) returns boolean
+begin
+    if exists(
+        select
+            1
+        from
+            ((select
+                1
+            from
+                admins
+            where
+                admins.email = _email and admins.deleted_at is null
+            limit
+                1)
+            union
+            (select
+                1
+            from
+                players
+            where
+                players.email = _email and players.deleted_at is null
+            limit
+                1))
+            as
+                users
+    ) then
+        set _error_message = 'Email telah digunakan';
         return true;
     end if;
 
@@ -220,17 +260,13 @@ begin
         return false;
     end if;
 
-    if (is_username_exists(_username, _error_message)) then
-        return false;
-    end if;
-
     return true;
 end;
 
 create or replace function is_valid_authentication(
     in _username varchar(255),
     in _password text,
-    out _type enum('player', 'admin'),
+    out _role enum('player', 'admin'),
     out _error_message text
 ) returns boolean
 begin
@@ -240,9 +276,9 @@ begin
         from
             admins
         where
-            admins.username = _username or admins.password = _password
+            admins.username = _username and admins.password = hash(_password)
     ) then
-        set _type = 'admin';
+        set _role = 'admin';
         return true;
     end if;
 
@@ -252,9 +288,9 @@ begin
         from
             players
         where
-            players.username = _username or players.password = _password
+            players.username = _username and players.password = hash(_password)
     ) then
-        set _type = 'player';
+        set _role = 'player';
         return true;
     end if;
 
@@ -271,8 +307,8 @@ create or replace procedure register(
     in _gender varchar(255),
     in _username varchar(255),
     in _password text,
-    in _profile_picture text,
-    in _bio text
+    in _bio text,
+    in _profile_picture text
 )
 begin
     declare error_message text;
@@ -282,7 +318,7 @@ begin
         rollback;
 
         if (not better_length(error_message)) then
-            set error_message = 'Terjadi galat pada server. Tolong hubungi admin untuk melaporkan galat';
+            set error_message = 'Terjadi galat pada server. Hubungi admin untuk melaporkan galat';
         end if;
 
         signal
@@ -312,6 +348,14 @@ begin
         signal sqlstate '45000';
     end if;
 
+    if (is_username_exists(_username, error_message)) then
+        signal sqlstate '45000';
+    end if;
+
+    if (is_email_exists(_email, error_message)) then
+        signal sqlstate '45000';
+    end if;
+
     insert into
         players
     set
@@ -319,13 +363,79 @@ begin
         players.email = _email,
         players.gender = _gender,
         players.username = _username,
-        players.password = _password,
-        players.profile_picture = _profile_picture,
-        players.bio = _bio;
+        players.password = hash(_password),
+        players.bio = _bio,
+        players.profile_picture = _profile_picture;
 
     select last_insert_id() as addedPlayerId;
 
     commit;
+end;
+
+create or replace procedure login(
+    in _username varchar(255),
+    in _password varchar(255)
+) begin
+    declare error_message text;
+    declare role enum('player', 'admin');
+
+    declare exit handler for sqlexception, not found
+    begin
+        rollback;
+
+        if (not better_length(error_message)) then
+            set error_message = 'Terjadi galat pada server. Hubungi admin untuk melaporkan galat';
+        end if;
+
+        signal
+            sqlstate '45000'
+        set
+            message_text = error_message;
+    end;
+
+    start transaction;
+
+    if not (is_valid_username_password(_username, _password, error_message)) then
+        set error_message = 'Username atau password salah';
+        signal sqlstate '45000';
+    end if;
+
+    if not (is_valid_authentication(_username, _password, role, error_message)) then
+        signal sqlstate '45000';
+    end if;
+
+    if not (better_length(role)) then
+        set error_message = null;
+        signal sqlstate '45000';
+    end if;
+
+    if (role = 'player') then
+        select
+            id,
+            name,
+            username,
+            role
+        from
+            players
+        where
+            players.username = _username
+        limit
+            1;
+    end if;
+
+    if (role = 'admin') then
+        select
+            id,
+            name,
+            username,
+            role
+        from
+            admins
+        where
+            admins.username = _username
+        limit
+            1;
+    end if;
 end;
 -- === End Procedures ===
 

@@ -1,0 +1,11 @@
+meta {
+  name: logout
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://{{host}}:{{port}}/{{path}}/auth/logout
+  body: none
+  auth: none
+}
