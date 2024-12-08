@@ -1,13 +1,15 @@
-enum StatusCode {
-    Ok = 200,
-    Created = 201,
-    BadRequest = 400,
-    Unauthorized = 401,
-    Forbidden = 403,
-    NotFound = 404,
-    Conflict = 409,
-    InternalServerError = 500,
-}
+const StatusCode = {
+    Ok: 200,
+    Created: 201,
+    BadRequest: 400,
+    Unauthorized: 401,
+    Forbidden: 403,
+    NotFound: 404,
+    Conflict: 409,
+    InternalServerError: 500,
+} as const;
+
+type StatusCodeType = (typeof StatusCode)[keyof typeof StatusCode];
 
 type SuccessResponse = {
     message: string;
@@ -24,10 +26,10 @@ type ResponseBody = {
 };
 
 const buildResponse = (
-    code: StatusCode,
+    code: StatusCodeType,
     message: string,
     data?: Record<string, unknown> | Record<string, unknown>[],
-): [SuccessResponse | ErrorResponse, StatusCode] => {
+): [SuccessResponse | ErrorResponse, StatusCodeType] => {
     const response: Partial<SuccessResponse & ErrorResponse> = {};
 
     if (code === StatusCode.Ok || code === StatusCode.Created) {
@@ -46,6 +48,7 @@ const buildResponse = (
 
 export {
     StatusCode,
+    type StatusCodeType,
     type SuccessResponse,
     type ErrorResponse,
     type ResponseBody,

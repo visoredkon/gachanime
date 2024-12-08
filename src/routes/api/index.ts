@@ -1,5 +1,6 @@
-import { authentication } from "@/middlewares/authentication";
 import { Hono } from "hono";
+
+import { authentication } from "@/middlewares/authentication";
 import { authRouter } from "./auth";
 
 const router = new Hono();

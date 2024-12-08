@@ -5,7 +5,11 @@ import type { Variables } from "hono/types";
 
 import { RouterApi } from "@/routes/api";
 import type { SqlError } from "./types";
-import { StatusCode, buildResponse } from "./utils/buildResponse";
+import {
+    StatusCode,
+    type StatusCodeType,
+    buildResponse,
+} from "./utils/buildResponse";
 import { sqlStateType } from "./utils/sqlStateType";
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
@@ -21,7 +25,9 @@ app.notFound((c) => {
 
 app.onError((err, c) => {
     if (err instanceof HTTPException) {
-        return c.json(...buildResponse(err.status as StatusCode, err.message));
+        return c.json(
+            ...buildResponse(err.status as StatusCodeType, err.message),
+        );
     }
 
     if ((err as SqlError).sqlState) {

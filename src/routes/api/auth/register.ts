@@ -1,7 +1,8 @@
+import { Hono } from "hono";
+
 import { callProcedure } from "@/services/database";
 import type { Procedure } from "@/types";
 import { StatusCode, buildResponse } from "@/utils/buildResponse";
-import { Hono } from "hono";
 
 const router = new Hono();
 

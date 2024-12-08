@@ -1,5 +1,6 @@
-import { authentication } from "@/middlewares/authentication";
 import { Hono } from "hono";
+
+import { authentication } from "@/middlewares/authentication";
 import { loginRouter } from "./login";
 import { logoutRouter } from "./logout";
 import { registerRouter } from "./register";
