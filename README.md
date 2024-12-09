@@ -1,7 +1,7 @@
 # Gachanime
 API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen basis data.
 
-# Documentation
+# Documentation (**BELUM LENGKAP**)
 
 > Endpoint selalu dimulai dari `/api`
 
