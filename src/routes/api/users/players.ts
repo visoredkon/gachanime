@@ -13,6 +13,12 @@ router.get("/", async (c) => {
         await callProcedure("get_players", [isOnlyDeleted, isWithDeleted])
     ).results;
 
+    if (!queryResults.length) {
+        return c.json(
+            ...buildResponse(StatusCode.Ok, "Tidak ada players yang ditemukan"),
+        );
+    }
+
     return c.json(
         ...buildResponse(
             StatusCode.Created,

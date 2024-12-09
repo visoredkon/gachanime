@@ -136,10 +136,6 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 ### Method: `DELETE`
 
 #### Request
-> ##### `Headers`
-> ```
-> Cookie: token=string
-> ```
 > ##### `Param`
 > None
 > ##### `Query`
@@ -152,5 +148,115 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > ```json
 > {
 >   "message": "Logout berhasil",
+> }
+> ```
+
+## > `/users`
+## `/`
+
+### Method: `GET`
+
+#### Request
+> ##### `Param`
+> None
+> ##### `Query`
+> ```
+> only_deleted: "true" | "false"
+> with_deleted: "true" | "false"
+> ```
+> ##### `Body`
+> None
+
+#### Response
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Tidak ada users yang ditemukan"
+> }
+> ```
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Daftar users berhasil diambil",
+>   "data": [
+>     {
+>       "id": number,
+>       "name": string,
+>       "username": string,
+>       "role": "admin" | "player"
+>     }
+>   ]
+> }
+> ```
+
+## `/admins`
+
+### Method: `GET`
+
+#### Request
+> ##### `Param`
+> None
+> ##### `Query`
+> ```
+> only_deleted: "true" | "false"
+> with_deleted: "true" | "false"
+> ```
+> ##### `Body`
+> None
+
+#### Response
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Tidak ada admins yang ditemukan"
+> }
+> ```
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Daftar admins berhasil diambil",
+>   "data": [
+>     {
+>       "id": number,
+>       "name": string,
+>       "username": string,
+>     }
+>   ]
+> }
+> ```
+
+## `/players`
+
+### Method: `GET`
+
+#### Request
+> ##### `Param`
+> None
+> ##### `Query`
+> ```
+> only_deleted: "true" | "false"
+> with_deleted: "true" | "false"
+> ```
+> ##### `Body`
+> None
+
+#### Response
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Tidak ada players yang ditemukan"
+> }
+> ```
+> **Status: `200`**
+> ```json
+> {
+>   "message": "Daftar players berhasil diambil",
+>   "data": [
+>     {
+>       "id": number,
+>       "name": string,
+>       "username": string,
+>     }
+>   ]
 > }
 > ```

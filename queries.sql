@@ -440,6 +440,91 @@ create or replace procedure login(
     commit;
 end;
 
+create or replace procedure get_users(
+    in _only_deleted boolean,
+    in _with_deleted boolean
+) begin
+    declare error_message text;
+
+    declare exit handler for sqlexception, not found
+    begin
+        rollback;
+
+        if (not better_length(error_message)) then
+            set error_message = 'Terjadi galat pada server. Hubungi admin untuk melaporkan galat';
+        end if;
+
+        signal
+            sqlstate '45000'
+        set
+            message_text = error_message;
+    end;
+
+    if (_only_deleted is null) then
+        set _only_deleted = false;
+    end if;
+
+    if (_with_deleted is null) then
+        set _with_deleted = false;
+    end if;
+
+    start transaction;
+
+    if (_only_deleted) then
+        (select
+            id,
+            name,
+            username,
+            'admin' as role
+        from
+            v_admins_deleted)
+        union
+        (select
+            id,
+            name,
+            username,
+            'player' as role
+        from
+            v_players_deleted);
+    end if;
+
+    if (_with_deleted) then
+        (select
+            id,
+            name,
+            username,
+            'admin' as role
+        from
+            v_admins)
+        union
+        (select
+            id,
+            name,
+            username,
+            'player' as role
+        from
+            v_players);
+    end if;
+
+    (select
+        id,
+        name,
+        username,
+        'admin' as role
+    from
+        v_admins_active)
+    union
+    (select
+        id,
+        name,
+        username,
+        'player' as role
+    from
+        v_players_active);
+
+    commit;
+end;
+
 create or replace procedure get_admins(
     in _only_deleted boolean,
     in _with_deleted boolean
@@ -473,8 +558,8 @@ create or replace procedure get_admins(
     if (_only_deleted) then
         select
             id,
-            username,
-            name
+            name,
+            username
         from
             v_admins_deleted;
     end if;
@@ -482,16 +567,16 @@ create or replace procedure get_admins(
     if (_with_deleted) then
         select
             id,
-            username,
-            name
+            name,
+            username
         from
             v_admins;
     end if;
 
     select
         id,
-        username,
-        name
+        name,
+        username
     from
         v_admins_active;
 
@@ -531,8 +616,8 @@ create or replace procedure get_players(
     if (_only_deleted) then
         select
             id,
-            username,
-            name
+            name,
+            username
         from
             v_players_deleted;
     end if;
@@ -540,16 +625,16 @@ create or replace procedure get_players(
     if (_with_deleted) then
         select
             id,
-            username,
-            name
+            name,
+            username
         from
             v_players;
     end if;
 
     select
         id,
-        username,
-        name
+        name,
+        username
     from
         v_players_active;
 

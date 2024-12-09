@@ -9,6 +9,18 @@ type ProcedureDetails<Input, Output> = {
     output: Output;
 };
 
+type GetUsers = ProcedureDetails<
+    {
+        onlyDeleted?: boolean;
+        withDeleted?: boolean;
+    },
+    {
+        id: number;
+        name: string;
+        username: string;
+    }
+>;
+
 type Procedure = {
     login: ProcedureDetails<
         {
@@ -40,30 +52,9 @@ type Procedure = {
             addedPlayerId: number;
         }
     >;
-    get_admins: ProcedureDetails<
-        {
-            onlyDeleted?: boolean;
-            withDeleted?: boolean;
-        },
-        {
-            id: number;
-            name: string;
-            email: string;
-            username: string;
-        }
-    >;
-    get_players: ProcedureDetails<
-        {
-            onlyDeleted?: boolean;
-            withDeleted?: boolean;
-        },
-        {
-            id: number;
-            name: string;
-            email: string;
-            username: string;
-        }
-    >;
+    get_users: GetUsers & { output: { role: "player" | "admin" } };
+    get_admins: GetUsers;
+    get_players: GetUsers;
 };
 
 export type { ValuesOf, SqlError, Procedure };
