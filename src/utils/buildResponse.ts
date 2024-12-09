@@ -46,6 +46,11 @@ const buildResponse = (
     return [response as SuccessResponse | ErrorResponse, code];
 };
 
+const onlyAdmin = buildResponse(
+    StatusCode.Unauthorized,
+    "Unauthorized, hanya admin yang dapat melakukan hal ini",
+);
+
 export {
     StatusCode,
     type StatusCodeType,
@@ -53,4 +58,5 @@ export {
     type ErrorResponse,
     type ResponseBody,
     buildResponse,
+    onlyAdmin,
 };

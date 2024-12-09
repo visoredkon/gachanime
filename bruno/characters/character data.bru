@@ -1,0 +1,19 @@
+meta {
+  name: character data
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://{{host}}:{{port}}/{{path}}/characters/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Pikachu",
+    "description": "Dapat memanipulasi energi listrik",
+    "exp": 20
+  }
+}

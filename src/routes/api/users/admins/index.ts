@@ -1,8 +1,8 @@
+import { Hono } from "hono";
+
 import { callProcedure } from "@/services/database";
 import { StatusCode, buildResponse, onlyAdmin } from "@/utils/buildResponse";
-import { Hono } from "hono";
-import { adminsRouter } from "./admins";
-import { playersRouter } from "./players";
+import { adminRouter } from "./:id";
 
 const router = new Hono();
 
@@ -23,12 +23,12 @@ router.get("/", async (c) => {
         return c.json(...onlyAdmin);
     }
 
-    const procedureName = filter ? "find_users" : "get_users";
+    const procedureName = filter ? "find_admins" : "get_admins";
     const procedureArgs = {
         // biome-ignore lint/style/useNamingConvention: <explanation>
-        find_users: [filter, isOnlyDeleted, isWithDeleted],
+        find_admins: [filter, isOnlyDeleted, isWithDeleted],
         // biome-ignore lint/style/useNamingConvention: <explanation>
-        get_users: [isOnlyDeleted, isWithDeleted],
+        get_admins: [isOnlyDeleted, isWithDeleted],
     };
 
     const queryResults = (
@@ -40,8 +40,8 @@ router.get("/", async (c) => {
             ...buildResponse(
                 StatusCode.Ok,
                 filter
-                    ? `Tidak ada users dengan keyword "${filter}" yang ditemukan`
-                    : "Tidak ada users yang ditemukan",
+                    ? `Tidak ada admins dengan keyword "${filter}" yang ditemukan`
+                    : "Tidak ada admins yang ditemukan",
             ),
         );
     }
@@ -50,14 +50,13 @@ router.get("/", async (c) => {
         ...buildResponse(
             StatusCode.Ok,
             filter
-                ? `Daftar users dengan keyword "${filter}" berhasil diambil`
-                : "Daftar users berhasil diambil",
+                ? `Daftar admins dengan keyword "${filter}" berhasil diambil`
+                : "Daftar admins berhasil diambil",
             queryResults,
         ),
     );
 });
 
-router.route("/admins", adminsRouter);
-router.route("/players", playersRouter);
+router.route("/:id", adminRouter);
 
-export { router as usersRouter };
+export { router as adminsRouter };

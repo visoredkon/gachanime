@@ -1,17 +1,11 @@
 meta {
-  name: admins
+  name: admin
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
   url: http://{{host}}:{{port}}/{{path}}/users/admins/1
   body: none
   auth: none
-}
-
-params:query {
-  ~filter: gamer
-  ~only_deleted: true
-  ~with_deleted: true
 }

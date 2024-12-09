@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: http://{{host}}:{{port}}/{{path}}/users?only_deleted=false&with_deleted=true
+  url: http://{{host}}:{{port}}/{{path}}/users
   body: none
   auth: none
 }
 
 params:query {
-  only_deleted: false
-  with_deleted: true
+  ~filter: gamer
+  ~with_deleted: true
+  ~only_deleted: true
 }

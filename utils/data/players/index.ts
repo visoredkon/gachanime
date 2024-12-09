@@ -35,7 +35,6 @@ export const players: Procedure["register"]["input"][] = Array.from(
             username: `player${i + 1}`,
             password: "password",
             bio: faker.person.bio(),
-            profilePicture: "",
         };
     },
 );

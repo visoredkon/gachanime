@@ -1,0 +1,17 @@
+meta {
+  name: sell character
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://{{host}}:{{port}}/{{path}}/characters/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "playerId": 1
+  }
+}

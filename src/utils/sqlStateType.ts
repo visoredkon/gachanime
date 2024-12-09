@@ -1,8 +1,6 @@
-import { SkillIssueError } from "@/errors";
-
 export const sqlStateType = (
     code: number,
-): "Warning" | "Defined Exception" | "Exception" | "No data" | never => {
+): "Warning" | "Defined Exception" | "Exception" | "No data" | undefined => {
     if (code <= 1000) {
         return "Warning";
     }
@@ -18,6 +16,4 @@ export const sqlStateType = (
     if (code >= 20000) {
         return "No data";
     }
-
-    throw new SkillIssueError();
 };

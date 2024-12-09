@@ -33,10 +33,7 @@ app.onError((err, c) => {
     if ((err as SqlError).sqlState) {
         const sqlState = sqlStateType(Number((err as SqlError).sqlState));
 
-        if (
-            sqlState === "Defined Exception" &&
-            !err.message.startsWith("Terjadi galat pada server")
-        ) {
+        if (sqlState === "Defined Exception") {
             return c.json(...buildResponse(StatusCode.BadRequest, err.message));
         }
 

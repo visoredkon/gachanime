@@ -36,13 +36,12 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > ##### `Body`
 > ```json
 > {
->   "name": string,
->   "email": string,
->   "gender": ("Laki-laki" | "Perempuan"), // enum
->   "username": string, // max 50
->   "password": string, // min 8
->   "profilePicture": string, // optional
->   "bio": string // optional
+>     "name": string,
+>     "email": string,
+>     "gender": ("Laki-laki" | "Perempuan"), // enum
+>     "username": string, // max 50
+>     "password": string, // min 8
+>     "bio": string // optional
 > }
 > ```
 
@@ -50,10 +49,10 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `201`**
 > ```json
 > {
->   "message": "Register akun berhasil",
->   "data": {
->     "addedPlayerId": number
->   }
+>     "message": "Register akun berhasil",
+>     "data": {
+>       "addedPlayerId": number
+>     }
 > }
 > ```
 > **Status: `400`**
@@ -105,8 +104,8 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > ##### `Body`
 > ```json
 > {
->   "username": string, // max 50
->   "password": string // min 8
+>     "username": string, // max 50
+>     "password": string // min 8
 > }
 > ```
 
@@ -114,14 +113,14 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `200`**
 > ```json
 > {
->   "message": "Login berhasil",
->   "data": {
->     "id": number,
->     "name": string,
->     "username": string,
->     "role": string, // player | admin
->     "tzOffset": string
->   }
+>     "message": "Login berhasil",
+>     "data": {
+>       "id": number,
+>       "name": string,
+>       "username": string,
+>       "role": string, // player | admin
+>       "tzOffset": string
+>     }
 > }
 > ```
 > **Status: `400`**
@@ -171,21 +170,21 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `200`**
 > ```json
 > {
->   "message": "Tidak ada users yang ditemukan"
+>     "message": "Tidak ada users yang ditemukan"
 > }
 > ```
 > **Status: `200`**
 > ```json
 > {
->   "message": "Daftar users berhasil diambil",
->   "data": [
->     {
->       "id": number,
->       "name": string,
->       "username": string,
->       "role": "admin" | "player"
->     }
->   ]
+>     "message": "Daftar users berhasil diambil",
+>     "data": [
+>       {
+>         "id": number,
+>         "name": string,
+>         "username": string,
+>         "role": "admin" | "player"
+>       }
+>     ]
 > }
 > ```
 
@@ -208,20 +207,20 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `200`**
 > ```json
 > {
->   "message": "Tidak ada admins yang ditemukan"
+>     "message": "Tidak ada admins yang ditemukan"
 > }
 > ```
 > **Status: `200`**
 > ```json
 > {
->   "message": "Daftar admins berhasil diambil",
->   "data": [
->     {
->       "id": number,
->       "name": string,
->       "username": string,
->     }
->   ]
+>     "message": "Daftar admins berhasil diambil",
+>     "data": [
+>       {
+>         "id": number,
+>         "name": string,
+>         "username": string,
+>       }
+>     ]
 > }
 > ```
 
@@ -244,19 +243,19 @@ API _gacha character_, dibuat untuk memenuhi tugas besar mata kuliah manajemen b
 > **Status: `200`**
 > ```json
 > {
->   "message": "Tidak ada players yang ditemukan"
+>     "message": "Tidak ada players yang ditemukan"
 > }
 > ```
 > **Status: `200`**
 > ```json
 > {
->   "message": "Daftar players berhasil diambil",
->   "data": [
->     {
->       "id": number,
->       "name": string,
->       "username": string,
->     }
->   ]
+>     "message": "Daftar players berhasil diambil",
+>     "data": [
+>       {
+>         "id": number,
+>         "name": string,
+>         "username": string,
+>       }
+>     ]
 > }
 > ```

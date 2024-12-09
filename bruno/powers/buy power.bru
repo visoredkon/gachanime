@@ -1,0 +1,17 @@
+meta {
+  name: buy power
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://{{host}}:{{port}}/{{path}}/powers/5
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "playerId": 1
+  }
+}

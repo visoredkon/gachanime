@@ -6,18 +6,19 @@ meta {
 
 post {
   url: http://{{host}}:{{port}}/{{path}}/auth/register
-  body: multipartForm
+  body: json
   auth: none
 }
 
-body:multipart-form {
-  name: {{name}}
-  email: {{email}}
-  gender: {{gender}}
-  username: {{username}}
-  password: {{password}}
-  bio: {{bio}}
-  ~profilePicture: @file()
+body:json {
+  {
+    "name": "{{name}}",
+    "email": "{{email}}",
+    "gender": "{{gender}}",
+    "username": "{{username}}",
+    "password": "{{password}}",
+    "bio": "{{bio}}"
+  }
 }
 
 script:pre-request {

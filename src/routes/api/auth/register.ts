@@ -7,12 +7,7 @@ import { StatusCode, buildResponse } from "@/utils/buildResponse";
 const router = new Hono();
 
 router.post("/", async (c) => {
-    const body: Omit<Procedure["register"]["input"], "profilePicture"> & {
-        profilePicture?: File;
-    } = await c.req.parseBody();
-
-    // TODO: Handle binary (mungkin path atau key kalau nanti make service storage)
-    const profilePicture = "";
+    const body: Procedure["register"]["input"] = await c.req.json();
 
     const queryResults = (
         await callProcedure("register", [
@@ -22,7 +17,7 @@ router.post("/", async (c) => {
             body.username,
             body.password,
             body.bio,
-            profilePicture,
+            "player",
         ])
     ).results[0];
 

@@ -1,0 +1,19 @@
+meta {
+  name: character new
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{host}}:{{port}}/{{path}}/characters
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Pikachu",
+    "description": "Dapat memanipulasi energi listrik",
+    "exp": 20
+  }
+}

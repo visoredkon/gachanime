@@ -1,0 +1,18 @@
+meta {
+  name: login admin
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://{{host}}:{{port}}/{{path}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "admin1",
+    "password": "password"
+  }
+}

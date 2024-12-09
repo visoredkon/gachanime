@@ -1,0 +1,15 @@
+meta {
+  name: character existence
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://{{host}}:{{port}}/{{path}}/characters/1
+  body: none
+  auth: none
+}
+
+params:query {
+  ~hard: true
+}

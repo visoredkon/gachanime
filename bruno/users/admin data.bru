@@ -1,0 +1,22 @@
+meta {
+  name: admin data
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://{{host}}:{{port}}/{{path}}/users/admins/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{name}}",
+    "email": "{{email}}",
+    "gender": "{{gender}}",
+    "username": "{{username}}",
+    "password": "{{password}}",
+    "bio": "{{bio}}"
+  }
+}

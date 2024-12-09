@@ -1,0 +1,16 @@
+meta {
+  name: players rank
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://{{host}}:{{port}}/{{path}}/users/players/rank?type=exp&limit=3
+  body: none
+  auth: none
+}
+
+params:query {
+  type: exp
+  limit: 3
+}

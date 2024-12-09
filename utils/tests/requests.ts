@@ -1,5 +1,29 @@
 import app from "@/index";
 
+export const getRequest = async (endpoint: string, cookie: string) => {
+    const response = await app.request(endpoint, {
+        method: "GET",
+        headers: new Headers({ cookie: cookie }),
+    });
+
+    const headersObj: { [key: string]: string } = {};
+    response.headers.forEach((value, key) => {
+        headersObj[key] = value;
+    });
+
+    const jsonRes: {
+        status: number;
+        header: { [key: string]: string };
+        body: Response;
+    } = {
+        status: response.status,
+        header: headersObj,
+        body: response,
+    };
+
+    return jsonRes;
+};
+
 export const postRequest = async (
     endpoint: string,
     payload: object | FormData,

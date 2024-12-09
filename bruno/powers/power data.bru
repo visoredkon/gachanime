@@ -1,0 +1,19 @@
+meta {
+  name: power data
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://{{host}}:{{port}}/{{path}}/powers/5
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Botol",
+    "description": "Dapat memanipulasi energi",
+    "price": 20
+  }
+}

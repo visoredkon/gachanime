@@ -35,24 +35,23 @@ describe("auth: register", () => {
         gender: "Laki-Laki",
         username: "kazuma",
         password: "kazuma123",
-        profilePicture: new File([], ""),
         bio: "",
     };
 
-    const requestForm = new FormData();
+    const requestBody: Partial<typeof registerData> = {};
 
     beforeEach(() => {
         for (const key in registerData) {
             if (Object.prototype.hasOwnProperty.call(registerData, key)) {
                 const element = registerData[key as keyof typeof registerData];
 
-                requestForm.set(key, element);
+                requestBody[key as keyof typeof registerData] = element;
             }
         }
     });
 
     const registerPostRequest = () =>
-        postRequest("/api/auth/register", requestForm, "multipart/form-data");
+        postRequest("/api/auth/register", requestBody, "multipart/form-data");
 
     test("register berhasil", async () => {
         const response = await registerPostRequest();
@@ -71,7 +70,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `name` kosong", async () => {
-        requestForm.delete("name");
+        requestBody.name = undefined;
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -83,7 +82,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `email` kosong", async () => {
-        requestForm.delete("email");
+        requestBody.email = undefined;
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -95,7 +94,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `email` tidak valid", async () => {
-        requestForm.set("email", "kazuma@");
+        requestBody.email = "kazuma@";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -107,7 +106,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `email` telah digunakan", async () => {
-        requestForm.set("username", "kazuma2");
+        requestBody.username = "kazuma2";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -119,7 +118,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `gender` kosong", async () => {
-        requestForm.delete("gender");
+        requestBody.gender = undefined;
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -131,7 +130,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `gender` tidak valid (bukan Laki-Laki atau Perempuan)", async () => {
-        requestForm.set("gender", "Cowok");
+        requestBody.gender = "Cowok";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -143,7 +142,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `username` kosong", async () => {
-        requestForm.delete("username");
+        requestBody.username = undefined;
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -157,7 +156,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `username` tidak valid (kurang dari 3 karakter)", async () => {
-        requestForm.set("username", "k");
+        requestBody.username = "k";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -171,10 +170,8 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `username` tidak valid (lebih dari 50 karakter)", async () => {
-        requestForm.set(
-            "username",
-            "123456789123456789123456789123456789123456789123456789",
-        );
+        requestBody.username =
+            "123456789123456789123456789123456789123456789123456789";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -188,7 +185,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `password` kosong", async () => {
-        requestForm.delete("password");
+        requestBody.password = undefined;
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;
@@ -200,7 +197,7 @@ describe("auth: register", () => {
     });
 
     test("register gagal ketika `password` tidak valid (kurang dari 8 karakter)", async () => {
-        requestForm.set("password", "kazuma");
+        requestBody.password = "kazuma";
         const response = await registerPostRequest();
 
         const responseBody = (await response.body.json()) as ErrorResponse;

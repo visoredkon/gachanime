@@ -35,7 +35,6 @@ export const admins: (Procedure["register"]["input"] & {
         username: `admin${i + 1}`,
         password: "password",
         bio: faker.person.bio(),
-        profilePicture: "",
         deletedAt: faker.helpers.arrayElement([null, new Date()]),
     };
 });
