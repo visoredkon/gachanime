@@ -40,6 +40,30 @@ type Procedure = {
             addedPlayerId: number;
         }
     >;
+    get_admins: ProcedureDetails<
+        {
+            onlyDeleted?: boolean;
+            withDeleted?: boolean;
+        },
+        {
+            id: number;
+            name: string;
+            email: string;
+            username: string;
+        }
+    >;
+    get_players: ProcedureDetails<
+        {
+            onlyDeleted?: boolean;
+            withDeleted?: boolean;
+        },
+        {
+            id: number;
+            name: string;
+            email: string;
+            username: string;
+        }
+    >;
 };
 
 export type { ValuesOf, SqlError, Procedure };

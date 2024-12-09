@@ -13,7 +13,7 @@ router.post("/", async (c) => {
 
     const queryResults = (
         await callProcedure("login", [body.username, body.password])
-    ).result[0];
+    ).results[0];
 
     setCookie(
         c,

@@ -1,0 +1,16 @@
+meta {
+  name: players
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://{{host}}:{{port}}/{{path}}/users/players?only_deleted=false&with_deleted=true
+  body: none
+  auth: none
+}
+
+params:query {
+  only_deleted: false
+  with_deleted: true
+}

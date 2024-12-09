@@ -1,0 +1,16 @@
+meta {
+  name: admins
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{host}}:{{port}}/{{path}}/users/admins?only_deleted=false&with_deleted=true
+  body: none
+  auth: none
+}
+
+params:query {
+  only_deleted: false
+  with_deleted: true
+}

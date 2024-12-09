@@ -14,7 +14,7 @@ async function manipulateDatabase(action: "seed" | "drop") {
 
             for (const data of inserts.admins) {
                 await connection.execute(
-                    "insert into admins set admins.name = ?, admins.email = ?, admins.gender = ?, admins.username = ?, admins.password = hash(?), admins.bio = ?, admins.profile_picture = ?;",
+                    "insert into admins set admins.name = ?, admins.email = ?, admins.gender = ?, admins.username = ?, admins.password = hash(?), admins.bio = ?, admins.profile_picture = ?, admins.deleted_at = ?;",
                     [
                         data.name,
                         data.email,
@@ -23,6 +23,7 @@ async function manipulateDatabase(action: "seed" | "drop") {
                         data.password,
                         data.bio,
                         data.profilePicture,
+                        data.deletedAt,
                     ],
                 );
             }

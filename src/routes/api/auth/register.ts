@@ -24,7 +24,7 @@ router.post("/", async (c) => {
             body.bio,
             profilePicture,
         ])
-    ).result[0];
+    ).results[0];
 
     return c.json(
         ...buildResponse(

@@ -436,9 +436,178 @@ create or replace procedure login(
         limit
             1;
     end if;
+
+    commit;
+end;
+
+create or replace procedure get_admins(
+    in _only_deleted boolean,
+    in _with_deleted boolean
+) begin
+    declare error_message text;
+
+    declare exit handler for sqlexception, not found
+    begin
+        rollback;
+
+        if (not better_length(error_message)) then
+            set error_message = 'Terjadi galat pada server. Hubungi admin untuk melaporkan galat';
+        end if;
+
+        signal
+            sqlstate '45000'
+        set
+            message_text = error_message;
+    end;
+
+    if (_only_deleted is null) then
+        set _only_deleted = false;
+    end if;
+
+    if (_with_deleted is null) then
+        set _with_deleted = false;
+    end if;
+
+    start transaction;
+
+    if (_only_deleted) then
+        select
+            id,
+            username,
+            name
+        from
+            v_admins_deleted;
+    end if;
+
+    if (_with_deleted) then
+        select
+            id,
+            username,
+            name
+        from
+            v_admins;
+    end if;
+
+    select
+        id,
+        username,
+        name
+    from
+        v_admins_active;
+
+    commit;
+end;
+
+create or replace procedure get_players(
+    in _only_deleted boolean,
+    in _with_deleted boolean
+) begin
+    declare error_message text;
+
+    declare exit handler for sqlexception, not found
+    begin
+        rollback;
+
+        if (not better_length(error_message)) then
+            set error_message = 'Terjadi galat pada server. Hubungi admin untuk melaporkan galat';
+        end if;
+
+        signal
+            sqlstate '45000'
+        set
+            message_text = error_message;
+    end;
+
+    if (_only_deleted is null) then
+        set _only_deleted = false;
+    end if;
+
+    if (_with_deleted is null) then
+        set _with_deleted = false;
+    end if;
+
+    start transaction;
+
+    if (_only_deleted) then
+        select
+            id,
+            username,
+            name
+        from
+            v_players_deleted;
+    end if;
+
+    if (_with_deleted) then
+        select
+            id,
+            username,
+            name
+        from
+            v_players;
+    end if;
+
+    select
+        id,
+        username,
+        name
+    from
+        v_players_active;
+
+    commit;
 end;
 -- === End Procedures ===
 
+-- === Start Views ===
+create or replace view v_admins
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, created_at, updated_at, deleted_at
+from
+    admins;
+
+create or replace view v_admins_active
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, created_at, updated_at, deleted_at
+from
+    admins
+where
+    admins.deleted_at is null;
+
+create or replace view v_admins_deleted
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, created_at, updated_at, deleted_at
+from
+    admins
+where
+    admins.deleted_at is not null;
+
+create or replace view v_players
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, claim_limit, pull_limit, total_exp, total_money, created_at, updated_at, deleted_at
+from
+    players;
+
+create or replace view v_players_active
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, claim_limit, pull_limit, total_exp, total_money, created_at, updated_at, deleted_at
+from
+    players
+where
+    players.deleted_at is null;
+
+create or replace view v_players_deleted
+    as
+select
+    id, name, email, gender, username, password, bio, profile_picture, claim_limit, pull_limit, total_exp, total_money, created_at, updated_at, deleted_at
+from
+    players
+where
+    players.deleted_at is not null;
+-- === End Views ===
 
 -- === Start Events ===
 -- show variables like 'event_scheduler';

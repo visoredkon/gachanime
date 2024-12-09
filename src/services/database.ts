@@ -13,7 +13,7 @@ export const callProcedure = async <TProcedureName extends keyof Procedure>(
     procName: TProcedureName,
     procParams: ValuesOf<Procedure[TProcedureName]["input"]>,
 ): Promise<{
-    result: Procedure[TProcedureName]["output"][];
+    results: Procedure[TProcedureName]["output"][];
     resultHeader: ResultSetHeader;
 }> => {
     const [queryResults] = await connection.execute(
@@ -21,13 +21,13 @@ export const callProcedure = async <TProcedureName extends keyof Procedure>(
         procParams.map((value) => value ?? null),
     );
 
-    const [result, resultHeader] = queryResults as [
+    const [results, resultHeader] = queryResults as [
         Procedure[TProcedureName]["output"][],
         ResultSetHeader,
     ];
 
     return {
-        result,
+        results,
         resultHeader,
     };
 };
